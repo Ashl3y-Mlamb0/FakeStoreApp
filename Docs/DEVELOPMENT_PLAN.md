@@ -9,41 +9,41 @@ Start Date:04/05/25
 ### Functional Requirements
 
 #### Category Screen (5 points)
-- [ ] Implement category fetching from Fake Store API
-- [ ] Create scrollable category layout
-- [ ] Add loading indicators
-- [ ] Handle error states
+- [x] Implement category fetching from Fake Store API
+- [x] Create scrollable category layout
+- [x] Add loading indicators
+- [x] Handle error states
 
 #### Product List Screen (5 points)
-- [ ] Implement navigation from categories
-- [ ] Create FlatList-based product display
-- [ ] Add loading states
-- [ ] Implement error handling
+- [x] Implement navigation from categories
+- [x] Create FlatList-based product display
+- [x] Add loading states
+- [x] Implement error handling
 
 #### Product Detail Screen (5 points)
-- [ ] Create detailed product view
-- [ ] Add back navigation
-- [ ] Include disabled "Add to Shopping Cart" button
-- [ ] Display product information:
+- [x] Create detailed product view
+- [x] Add back navigation
+- [x] Include disabled "Add to Shopping Cart" button
+- [x] Display product information:
   - Title
   - Image
   - Description
   - Price
-- [ ] Implement loading indicators
+- [x] Implement loading indicators
 
 ### Technical Implementation
-- Initialize Expo project with TypeScript
-- Set up project structure
-- Configure essential dependencies:
+- [x] Initialize Expo project with TypeScript
+- [x] Set up project structure
+- [x] Configure essential dependencies:
   - React Native Paper
   - Expo Router
-- Implement API services for Fake Store API
-- Create basic navigation structure
+- [x] Implement API services for Fake Store API
+- [x] Create basic navigation structure
 
 ### Submission Requirements
-- [ ] GitHub repository URL
-- [ ] Commit history screenshot labeled "Milestone 1"
-- [ ] Screenshots:
+- [x] GitHub repository URL
+- [x] Commit history screenshot labeled "Milestone 1"
+- [x] Screenshots:
   - Category Screen
   - Product List Screen
   - Product Detail Screen
@@ -53,39 +53,39 @@ Start Date: 15/05/25
 ### Functional Requirements
 
 #### Add to Cart + State Management (5 points)
-- [ ] Enable "Add to Cart" functionality
-- [ ] Implement Redux Toolkit cart state
-- [ ] Create cart actions and reducers
+- [x] Enable "Add to Cart" functionality
+- [x] Implement Redux Toolkit cart state
+- [x] Create cart actions and reducers
 
 #### Bottom Tab Navigation (5 points)
-- [ ] Create tabs:
+- [x] Create tabs:
   - Products (Category screen)
   - Shopping Cart
-- [ ] Implement tab navigation logic
-- [ ] Add proper routing
+- [x] Implement tab navigation logic
+- [x] Add proper routing
 
 #### Shopping Cart Screen (5 points)
-- [ ] Create empty cart state message
-- [ ] Implement FlatList for cart items
-- [ ] Add quantity controls
+- [x] Create empty cart state message
+- [x] Implement FlatList for cart items
+- [x] Add quantity controls
   - Increase/decrease buttons
   - Auto-remove at 0 quantity
-- [ ] Display cart summary
+- [x] Display cart summary
   - Total cost
   - Item count
-- [ ] Implement cart badge on tab
+- [x] Implement cart badge on tab
 
 ### Technical Implementation
-- Set up Redux store configuration
-- Create cart slice and actions
-- Implement cart persistence
-- Add cart calculations
+- [x] Set up Redux store configuration
+- [x] Create cart slice and actions
+- [x] Implement cart persistence
+- [x] Add cart calculations
 
 ### Submission Requirements
-- [ ] GitHub repository URL
-- [ ] Commit history screenshot labeled "Milestone 2"
-- [ ] Screenshot of cartSlice.ts implementation
-- [ ] Cart screen screenshots:
+- [x] GitHub repository URL
+- [x] Commit history screenshot labeled "Milestone 2"
+- [x] Screenshot of cartSlice.ts implementation
+- [x] Cart screen screenshots:
   - Empty state
   - Single item
   - Multiple items

@@ -42,6 +42,16 @@ export default function TabsLayout() {
           tabBarBadgeStyle: { backgroundColor: theme.colors.primary },
         }}
       />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-outline" size={size} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 } 

@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "scheme": "acme",
+    "plugins": [
+      "expo-router"
+    ],
+    "name": "Fake-Store-App",
+    "slug": "Fake-Store-App"
+  }
+}

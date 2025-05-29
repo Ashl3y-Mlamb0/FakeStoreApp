@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ScrollView, Image, Dimensions, SafeAreaView } from 'react-native';
-import { Appbar, Text, Button, Card, useTheme } from 'react-native-paper';
+import { Appbar, Text, Button, Card, useTheme, Snackbar } from 'react-native-paper';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import LoadingIndicator from '../../src/components/common/LoadingIndicator';
 import { getProductById } from '../../src/services/api/products';
 import { Product } from '../../src/types/product';
+import { useCart } from '../../src/hooks/useCart';
 
 const { width } = Dimensions.get('window');
 
@@ -13,8 +14,10 @@ export default function ProductDetailScreen() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
   const router = useRouter();
   const theme = useTheme();
+  const { addItemToCart } = useCart();
 
   useEffect(() => {
     if (id) {
@@ -33,6 +36,13 @@ export default function ProductDetailScreen() {
       console.error(`Error fetching product ${productId}:`, err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddToCart = () => {
+    if (product) {
+      addItemToCart(product);
+      setSnackbarVisible(true);
     }
   };
 
@@ -89,14 +99,28 @@ export default function ProductDetailScreen() {
               mode="contained"
               style={styles.button}
               labelStyle={styles.buttonLabel}
-              disabled={true}
-              onPress={() => {}}
+              onPress={handleAddToCart}
             >
               Add to Shopping Cart
             </Button>
           </Card.Content>
         </Card>
       </ScrollView>
+      
+      <Snackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        duration={2000}
+        action={{
+          label: 'View Cart',
+          onPress: () => {
+            setSnackbarVisible(false);
+            router.push('/(tabs)/cart');
+          },
+        }}
+      >
+        Item added to cart!
+      </Snackbar>
     </SafeAreaView>
   );
 }

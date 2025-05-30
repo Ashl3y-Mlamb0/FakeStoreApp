@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, Alert } from 'react-native';
-import { Text, Button, Avatar, Card, Divider, useTheme, Portal, Modal, TextInput } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, Alert, SafeAreaView } from 'react-native';
+import { Text, Button, Avatar, Card, Divider, useTheme, Portal, Modal, TextInput, Appbar } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'expo-router';
 import { RootState } from '../../src/redux/store';
@@ -102,159 +102,167 @@ export default function ProfileScreen() {
   const totalOrdersCount = orders.length;
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-      <Card style={styles.profileCard}>
-        <Card.Content>
-          <View style={styles.profileHeader}>
-            <Avatar.Text 
-              size={80} 
-              label={user.name ? user.name.charAt(0).toUpperCase() : 'U'}
-              style={{ backgroundColor: colors.primary }}
-            />
-            <View style={styles.profileInfo}>
-              <Text variant="headlineSmall" style={styles.userName}>
-                {user.name || 'User'}
-              </Text>
-              <Text variant="bodyMedium" style={{ color: colors.onSurfaceVariant }}>
-                {user.email}
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <Appbar.Header elevated>
+        <Appbar.Content title="Profile" titleStyle={styles.headerTitle} />
+      </Appbar.Header>
+      
+      <ScrollView style={styles.scrollContainer}>
+        <Card style={styles.profileCard}>
+          <Card.Content>
+            <View style={styles.profileHeader}>
+              <Avatar.Text 
+                size={80} 
+                label={user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                style={{ backgroundColor: colors.primary }}
+              />
+              <View style={styles.profileInfo}>
+                <Text variant="headlineSmall" style={styles.userName}>
+                  {user.name || 'User'}
+                </Text>
+                <Text variant="bodyMedium" style={{ color: colors.onSurfaceVariant }}>
+                  {user.email}
+                </Text>
+              </View>
+            </View>
+          </Card.Content>
+        </Card>
+
+        <Card style={styles.statsCard}>
+          <Card.Content>
+            <Text variant="titleMedium" style={styles.statsTitle}>
+              Account Statistics
+            </Text>
+            <Divider style={styles.divider} />
+            
+            <View style={styles.statRow}>
+              <MaterialCommunityIcons 
+                name="cart-outline" 
+                size={24} 
+                color={colors.primary} 
+              />
+              <Text variant="bodyLarge" style={styles.statText}>
+                Cart Items: {totalCartItems}
               </Text>
             </View>
-          </View>
-        </Card.Content>
-      </Card>
 
-      <Card style={styles.statsCard}>
-        <Card.Content>
-          <Text variant="titleMedium" style={styles.statsTitle}>
-            Account Statistics
-          </Text>
-          <Divider style={styles.divider} />
-          
-          <View style={styles.statRow}>
-            <MaterialCommunityIcons 
-              name="cart-outline" 
-              size={24} 
-              color={colors.primary} 
-            />
-            <Text variant="bodyLarge" style={styles.statText}>
-              Cart Items: {totalCartItems}
+            <View style={styles.statRow}>
+              <MaterialCommunityIcons 
+                name="receipt" 
+                size={24} 
+                color={colors.primary} 
+              />
+              <Text variant="bodyLarge" style={styles.statText}>
+                Total Orders: {totalOrdersCount}
+              </Text>
+            </View>
+
+            <View style={styles.statRow}>
+              <MaterialCommunityIcons 
+                name="clock-alert" 
+                size={24} 
+                color={colors.error} 
+              />
+              <Text variant="bodyLarge" style={styles.statText}>
+                New Orders: {newOrdersCount}
+              </Text>
+            </View>
+
+            <View style={styles.statRow}>
+              <MaterialCommunityIcons 
+                name="account-check-outline" 
+                size={24} 
+                color={colors.primary} 
+              />
+              <Text variant="bodyLarge" style={styles.statText}>
+                Member since: {new Date().getFullYear()}
+              </Text>
+            </View>
+          </Card.Content>
+        </Card>
+
+        <Card style={styles.actionsCard}>
+          <Card.Content>
+            <Text variant="titleMedium" style={styles.actionsTitle}>
+              Account Actions
             </Text>
-          </View>
+            <Divider style={styles.divider} />
 
-          <View style={styles.statRow}>
-            <MaterialCommunityIcons 
-              name="receipt" 
-              size={24} 
-              color={colors.primary} 
-            />
-            <Text variant="bodyLarge" style={styles.statText}>
-              Total Orders: {totalOrdersCount}
-            </Text>
-          </View>
+            <Button
+              mode="contained"
+              onPress={() => setUpdateModalVisible(true)}
+              style={styles.actionButton}
+              icon="account-edit"
+            >
+              Update Profile
+            </Button>
 
-          <View style={styles.statRow}>
-            <MaterialCommunityIcons 
-              name="clock-alert" 
-              size={24} 
-              color={colors.error} 
-            />
-            <Text variant="bodyLarge" style={styles.statText}>
-              New Orders: {newOrdersCount}
-            </Text>
-          </View>
+            <Button
+              mode="outlined"
+              onPress={() => router.push('/checkout')}
+              style={styles.actionButton}
+              disabled={totalCartItems === 0}
+              icon="cart-outline"
+            >
+              Go to Checkout ({totalCartItems} items)
+            </Button>
 
-          <View style={styles.statRow}>
-            <MaterialCommunityIcons 
-              name="account-check-outline" 
-              size={24} 
-              color={colors.primary} 
-            />
-            <Text variant="bodyLarge" style={styles.statText}>
-              Member since: {new Date().getFullYear()}
-            </Text>
-          </View>
-        </Card.Content>
-      </Card>
+            <Button
+              mode="text"
+              onPress={handleSignOut}
+              style={styles.signOutButton}
+              icon="logout"
+              textColor={colors.error}
+            >
+              Sign Out
+            </Button>
+          </Card.Content>
+        </Card>
+      </ScrollView>
 
-      <Card style={styles.actionsCard}>
-        <Card.Content>
-          <Text variant="titleMedium" style={styles.actionsTitle}>
-            Account Actions
-          </Text>
-          <Divider style={styles.divider} />
-
-          <Button
-            mode="contained"
-            onPress={() => setUpdateModalVisible(true)}
-            style={styles.actionButton}
-            icon="account-edit"
-          >
-            Update Profile
-          </Button>
-
-          <Button
-            mode="outlined"
-            onPress={() => router.push('/checkout')}
-            style={styles.actionButton}
-            disabled={totalCartItems === 0}
-            icon="cart-outline"
-          >
-            Go to Checkout ({totalCartItems} items)
-          </Button>
-
-          <Button
-            mode="outlined"
-            onPress={handleSignOut}
-            style={styles.actionButton}
-            icon="logout"
-            loading={loading}
-          >
-            Sign Out
-          </Button>
-        </Card.Content>
-      </Card>
-
+      {/* Update Profile Modal */}
       <Portal>
         <Modal
           visible={updateModalVisible}
           onDismiss={handleCancelUpdate}
-          contentContainerStyle={[styles.modalContainer, { backgroundColor: colors.surface }]}
+          contentContainerStyle={[styles.modal, { backgroundColor: colors.surface }]}
         >
-          <Text variant="titleLarge" style={styles.modalTitle}>Update Profile</Text>
+          <Text variant="titleLarge" style={styles.modalTitle}>
+            Update Profile
+          </Text>
           
           <TextInput
-            label="Name"
+            label="Full Name"
             value={updateForm.name}
             onChangeText={(value) => setUpdateForm(prev => ({ ...prev, name: value }))}
             mode="outlined"
             style={styles.modalInput}
-            autoCapitalize="words"
           />
-
+          
           <TextInput
             label="New Password (optional)"
             value={updateForm.password}
             onChangeText={(value) => setUpdateForm(prev => ({ ...prev, password: value }))}
-            secureTextEntry
             mode="outlined"
+            secureTextEntry
             style={styles.modalInput}
           />
-
+          
           <TextInput
             label="Confirm New Password"
             value={updateForm.confirmPassword}
             onChangeText={(value) => setUpdateForm(prev => ({ ...prev, confirmPassword: value }))}
-            secureTextEntry
             mode="outlined"
+            secureTextEntry
             style={styles.modalInput}
+            disabled={!updateForm.password}
           />
-
-          <View style={styles.modalButtons}>
+          
+          <View style={styles.modalActions}>
             <Button
               mode="outlined"
               onPress={handleCancelUpdate}
               style={styles.modalButton}
-              disabled={updating}
             >
               Cancel
             </Button>
@@ -266,17 +274,23 @@ export default function ProfileScreen() {
               loading={updating}
               disabled={updating}
             >
-              Confirm
+              {updating ? 'Updating...' : 'Confirm'}
             </Button>
           </View>
         </Modal>
       </Portal>
-    </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  headerTitle: {
+    fontWeight: 'bold',
+  },
+  scrollContainer: {
     flex: 1,
     padding: 16,
   },
@@ -293,6 +307,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontWeight: 'bold',
+    marginBottom: 4,
   },
   statsCard: {
     marginBottom: 16,
@@ -322,20 +337,22 @@ const styles = StyleSheet.create({
   actionButton: {
     marginBottom: 12,
   },
-  modalContainer: {
+  signOutButton: {
+    marginTop: 8,
+  },
+  modal: {
     margin: 20,
     padding: 20,
     borderRadius: 8,
   },
   modalTitle: {
+    marginBottom: 16,
     textAlign: 'center',
-    marginBottom: 20,
-    fontWeight: 'bold',
   },
   modalInput: {
     marginBottom: 16,
   },
-  modalButtons: {
+  modalActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 16,

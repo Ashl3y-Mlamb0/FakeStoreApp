@@ -54,7 +54,7 @@ export default function TabsLayout() {
           title: 'My Orders',
           tabBarLabel: 'Orders',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="receipt-outline" size={size} color={color} />
+            <Ionicons name="receipt" size={size} color={color} />
           ),
           tabBarBadge: newOrdersCount > 0 ? newOrdersCount : undefined,
           tabBarBadgeStyle: { backgroundColor: theme.colors.error },

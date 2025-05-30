@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { Text, Card, Button, Avatar, Divider, useTheme, ActivityIndicator } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
+import { Text, Card, Button, Avatar, Divider, useTheme, ActivityIndicator, Appbar } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../src/redux/store';
 import { updateOrderStatus } from '../../src/redux/slices/ordersSlice';
@@ -167,49 +167,63 @@ export default function OrdersScreen() {
 
   if (!user) {
     return (
-      <View style={styles.centered}>
-        <Text>Please sign in to view your orders</Text>
-      </View>
+      <SafeAreaView style={styles.centered}>
+        <Appbar.Header elevated>
+          <Appbar.Content title="My Orders" titleStyle={styles.headerTitle} />
+        </Appbar.Header>
+        <View style={styles.centeredContent}>
+          <Text>Please sign in to view your orders</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text variant="headlineMedium" style={styles.title}>My Orders</Text>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <Appbar.Header elevated>
+        <Appbar.Content title="My Orders" titleStyle={styles.headerTitle} />
+      </Appbar.Header>
       
-      {renderOrderSection('New Orders', getOrdersByStatus('new'), colors.error)}
-      {renderOrderSection('Paid Orders', getOrdersByStatus('paid'), colors.tertiary)}
-      {renderOrderSection('Delivered Orders', getOrdersByStatus('delivered'), colors.primary)}
-    </ScrollView>
+      <ScrollView style={styles.scrollContainer}>
+        {renderOrderSection('New Orders', getOrdersByStatus('new'), colors.error)}
+        {renderOrderSection('Paid Orders', getOrdersByStatus('paid'), colors.tertiary)}
+        {renderOrderSection('Delivered Orders', getOrdersByStatus('delivered'), colors.primary)}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  headerTitle: {
+    fontWeight: 'bold',
+  },
+  scrollContainer: {
+    flex: 1,
     padding: 16,
   },
   centered: {
     flex: 1,
+  },
+  centeredContent: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  title: {
-    marginBottom: 20,
-    fontWeight: 'bold',
   },
   section: {
     marginBottom: 24,
   },
   sectionTitle: {
-    marginBottom: 12,
     fontWeight: 'bold',
+    marginBottom: 12,
   },
   emptyCard: {
     marginBottom: 8,
   },
   orderCard: {
-    marginBottom: 8,
+    marginBottom: 12,
   },
   orderHeader: {
     flexDirection: 'row',
@@ -221,19 +235,18 @@ const styles = StyleSheet.create({
   },
   orderId: {
     fontWeight: 'bold',
-    marginBottom: 4,
   },
   orderDetails: {
     paddingTop: 16,
   },
   itemsTitle: {
-    marginBottom: 12,
     fontWeight: 'bold',
+    marginBottom: 8,
   },
   orderItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   itemInfo: {
     marginLeft: 12,
@@ -250,5 +263,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 8,
+    padding: 8,
   },
 }); 

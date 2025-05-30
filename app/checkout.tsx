@@ -14,6 +14,7 @@ import {
 } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
 import { RootState } from '../src/redux/store';
 import { clearCart } from '../src/redux/slices/cartSlice';
 import { createOrder } from '../src/redux/slices/ordersSlice';
@@ -207,36 +208,39 @@ export default function CheckoutScreen() {
       
       <RadioButton.Group onValueChange={value => setPaymentMethod(value)} value={paymentMethod}>
         <Card style={styles.paymentCard}>
-          <RadioButton.Item
-            label="Credit Card"
-            value="credit"
-            position="leading"
-          />
-          <View style={styles.paymentIcons}>
-            <MaterialCommunityIcons name="credit-card" size={24} color={colors.primary} />
-          </View>
+          <Card.Content style={styles.paymentCardContent}>
+            <View style={styles.paymentMethod}>
+              <View style={styles.paymentInfo}>
+                <MaterialCommunityIcons name="credit-card" size={24} color={colors.primary} />
+                <Text variant="bodyLarge" style={styles.paymentLabel}>Credit Card</Text>
+              </View>
+              <RadioButton value="credit" />
+            </View>
+          </Card.Content>
         </Card>
         
         <Card style={styles.paymentCard}>
-          <RadioButton.Item
-            label="PayPal"
-            value="paypal"
-            position="leading"
-          />
-          <View style={styles.paymentIcons}>
-            <MaterialCommunityIcons name="wallet" size={24} color={colors.primary} />
-          </View>
+          <Card.Content style={styles.paymentCardContent}>
+            <View style={styles.paymentMethod}>
+              <View style={styles.paymentInfo}>
+                <MaterialCommunityIcons name="wallet" size={24} color={colors.primary} />
+                <Text variant="bodyLarge" style={styles.paymentLabel}>PayPal</Text>
+              </View>
+              <RadioButton value="paypal" />
+            </View>
+          </Card.Content>
         </Card>
         
         <Card style={styles.paymentCard}>
-          <RadioButton.Item
-            label="Cash on Delivery"
-            value="cod"
-            position="leading"
-          />
-          <View style={styles.paymentIcons}>
-            <MaterialCommunityIcons name="cash-multiple" size={24} color={colors.primary} />
-          </View>
+          <Card.Content style={styles.paymentCardContent}>
+            <View style={styles.paymentMethod}>
+              <View style={styles.paymentInfo}>
+                <MaterialCommunityIcons name="cash-multiple" size={24} color={colors.primary} />
+                <Text variant="bodyLarge" style={styles.paymentLabel}>Cash on Delivery</Text>
+              </View>
+              <RadioButton value="cod" />
+            </View>
+          </Card.Content>
         </Card>
       </RadioButton.Group>
     </View>
@@ -306,49 +310,57 @@ export default function CheckoutScreen() {
   }
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.progressContainer}>
-        <Text variant="titleMedium" style={styles.progressTitle}>
-          Step {step} of 3
-        </Text>
-        <ProgressBar progress={step / 3} style={styles.progressBar} />
-      </View>
+    <>
+      <Stack.Screen 
+        options={{
+          title: "Checkout",
+          headerBackTitle: "Back"
+        }}
+      />
+      <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={styles.progressContainer}>
+          <Text variant="titleMedium" style={styles.progressTitle}>
+            Step {step} of 3
+          </Text>
+          <ProgressBar progress={step / 3} style={styles.progressBar} />
+        </View>
 
-      {step === 1 && renderShippingStep()}
-      {step === 2 && renderPaymentStep()}
-      {step === 3 && renderReviewStep()}
+        {step === 1 && renderShippingStep()}
+        {step === 2 && renderPaymentStep()}
+        {step === 3 && renderReviewStep()}
 
-      <View style={styles.buttonContainer}>
-        <Button
-          mode="outlined"
-          onPress={handlePrevStep}
-          style={styles.button}
-        >
-          {step === 1 ? 'Back to Cart' : 'Previous'}
-        </Button>
-
-        {step < 3 ? (
+        <View style={styles.buttonContainer}>
           <Button
-            mode="contained"
-            onPress={handleNextStep}
+            mode="outlined"
+            onPress={handlePrevStep}
             style={styles.button}
-            disabled={step === 1 && !isAddressValid()}
           >
-            Next
+            {step === 1 ? 'Back' : 'Previous'}
           </Button>
-        ) : (
-          <Button
-            mode="contained"
-            onPress={handlePlaceOrder}
-            style={styles.button}
-            loading={isProcessing}
-            disabled={isProcessing}
-          >
-            {isProcessing ? 'Processing...' : 'Place Order'}
-          </Button>
-        )}
-      </View>
-    </ScrollView>
+
+          {step < 3 ? (
+            <Button
+              mode="contained"
+              onPress={handleNextStep}
+              style={styles.button}
+              disabled={step === 1 && !isAddressValid()}
+            >
+              Next
+            </Button>
+          ) : (
+            <Button
+              mode="contained"
+              onPress={handlePlaceOrder}
+              style={styles.button}
+              loading={isProcessing}
+              disabled={isProcessing}
+            >
+              {isProcessing ? 'Processing...' : 'Place Order'}
+            </Button>
+          )}
+        </View>
+      </ScrollView>
+    </>
   );
 }
 
@@ -385,15 +397,23 @@ const styles = StyleSheet.create({
     flex: 0.48,
   },
   paymentCard: {
-    marginBottom: 12,
+    marginBottom: 16,
+  },
+  paymentCardContent: {
     paddingVertical: 8,
   },
-  paymentIcons: {
-    position: 'absolute',
-    right: 16,
-    top: 16,
+  paymentMethod: {
     flexDirection: 'row',
-    gap: 8,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  paymentInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  paymentLabel: {
+    marginLeft: 12,
   },
   summaryCard: {
     marginBottom: 16,

@@ -3,9 +3,11 @@ import { StyleSheet, View, FlatList, SafeAreaView, Image } from 'react-native';
 import { Appbar, Text, Button, Card, IconButton, Divider, useTheme } from 'react-native-paper';
 import { useCart } from '../../src/hooks/useCart';
 import { CartItem } from '../../src/redux/slices/cartSlice';
+import { useRouter } from 'expo-router';
 
 export default function CartScreen() {
   const theme = useTheme();
+  const router = useRouter();
   const { 
     cartItems, 
     totalQuantity, 
@@ -14,6 +16,10 @@ export default function CartScreen() {
     decreaseItemQuantity, 
     removeItemFromCart 
   } = useCart();
+
+  const handleCheckout = () => {
+    router.push('/checkout');
+  };
 
   const renderCartItem = ({ item }: { item: CartItem }) => (
     <Card style={styles.cartItemCard} mode="outlined">
@@ -103,11 +109,12 @@ export default function CartScreen() {
       <View style={styles.checkoutContainer}>
         <Button 
           mode="contained" 
-          onPress={() => {}} 
-          disabled={true}
+          onPress={handleCheckout}
+          disabled={cartItems.length === 0}
           style={styles.checkoutButton}
+          icon="credit-card"
         >
-          Proceed to Checkout
+          Proceed to Checkout ({totalQuantity} items)
         </Button>
       </View>
     </SafeAreaView>

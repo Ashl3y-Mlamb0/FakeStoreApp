@@ -53,6 +53,7 @@ export default function CategoryScreen() {
       <Appbar.Header elevated>
         <Appbar.Content title="Product Categories" titleStyle={styles.headerTitle} />
       </Appbar.Header>
+      
       <CategoryList 
         categories={categories} 
         onCategoryPress={handleCategoryPress} 

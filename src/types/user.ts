@@ -4,9 +4,15 @@ export interface User {
   name?: string;
 }
 
+export interface AuthSession {
+  user: User;
+  token: string;
+  expiresAt: number;
+}
+
 export interface AuthState {
   user: User | null;
-  session: any | null;
+  session: AuthSession | null;
   loading: boolean;
   error: string | null;
 }

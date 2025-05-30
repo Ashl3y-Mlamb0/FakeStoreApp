@@ -141,6 +141,32 @@ Start Date:21/05/25
 - Add comprehensive error handling
 - Implement loading states
 
+### Supabase Database Setup
+To set up the required database for the authentication and data persistence features:
+
+1. Log in to the Supabase dashboard (https://app.supabase.com/)
+2. Select your project with URL: https://qocwdnjtfvjaqtijdpqz.supabase.co
+3. Navigate to "SQL Editor" in the left sidebar
+4. Create a new query and paste the complete schema from `src/services/supabase/schema.sql`
+5. Run the SQL script to create:
+   - Profiles table to extend user data
+   - Orders table for tracking purchases
+   - Order Items table for order details
+   - Favorites table for user product preferences
+   - Row Level Security policies for data protection
+   - Triggers for automatic profile creation
+
+6. Configure Authentication settings:
+   - Go to "Authentication" → "Providers"
+   - Ensure "Email" provider is enabled
+   - For development, consider disabling email confirmations
+
+7. Test the database setup:
+   - Create a test user through the sign-up screen
+   - Verify profile creation in the "Tables" section
+   - Test order creation through the checkout process
+   - Confirm data isolation between different user accounts
+
 ### Additional Requirements
 - [ ] Switch from public API to Fake Store Server
 - [ ] Implement all 9 distinct screens

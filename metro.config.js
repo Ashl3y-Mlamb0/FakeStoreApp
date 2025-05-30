@@ -7,9 +7,4 @@ const config = getDefaultConfig(__dirname, {
   isCSSEnabled: true,
 });
 
-// Add support for Node.js modules
-config.resolver.extraNodeModules = {
-  stream: require.resolve('stream-browserify'),
-};
-
 module.exports = config; 

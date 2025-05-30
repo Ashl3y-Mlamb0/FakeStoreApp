@@ -3,10 +3,16 @@ import { Tabs } from 'expo-router';
 import { useTheme } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { useCart } from '../../src/hooks/useCart';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../src/redux/store';
 
 export default function TabsLayout() {
   const theme = useTheme();
   const { totalQuantity } = useCart();
+  const { orders } = useSelector((state: RootState) => state.orders);
+  
+  // Count new orders for badge
+  const newOrdersCount = orders.filter(order => order.status === 'new').length;
   
   return (
     <Tabs
@@ -40,6 +46,18 @@ export default function TabsLayout() {
           ),
           tabBarBadge: totalQuantity > 0 ? totalQuantity : undefined,
           tabBarBadgeStyle: { backgroundColor: theme.colors.primary },
+        }}
+      />
+      <Tabs.Screen
+        name="orders"
+        options={{
+          title: 'My Orders',
+          tabBarLabel: 'Orders',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="receipt-outline" size={size} color={color} />
+          ),
+          tabBarBadge: newOrdersCount > 0 ? newOrdersCount : undefined,
+          tabBarBadgeStyle: { backgroundColor: theme.colors.error },
         }}
       />
       <Tabs.Screen

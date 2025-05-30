@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { supabase } from '../../services/supabase/client';
-import { AuthState, SignInCredentials, SignUpCredentials, User } from '../../types/user';
+import { mockAuth, User, AuthSession } from '../../services/auth/mockAuth';
+import { AuthState, SignInCredentials, SignUpCredentials } from '../../types/user';
+import { loadUserCart, clearUserCart, saveUserCart } from './cartSlice';
+import { loadUserOrders, clearOrders } from './ordersSlice';
 
 const initialState: AuthState = {
   user: null,
@@ -12,15 +14,21 @@ const initialState: AuthState = {
 // Async thunks for authentication
 export const signIn = createAsyncThunk(
   'auth/signIn',
-  async (credentials: SignInCredentials, { rejectWithValue }) => {
+  async (credentials: SignInCredentials, { rejectWithValue, dispatch }) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: credentials.email,
-        password: credentials.password,
-      });
-
-      if (error) throw error;
-      return data;
+      const result = await mockAuth.signIn(credentials.email, credentials.password);
+      
+      if (!result.success) {
+        return rejectWithValue(result.error || 'Sign in failed');
+      }
+      
+      // Load user-specific cart and orders after successful sign in
+      if (result.session) {
+        dispatch(loadUserCart(result.session.user.id));
+        dispatch(loadUserOrders(result.session.user.id));
+      }
+      
+      return result.session;
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -29,20 +37,21 @@ export const signIn = createAsyncThunk(
 
 export const signUp = createAsyncThunk(
   'auth/signUp',
-  async (credentials: SignUpCredentials, { rejectWithValue }) => {
+  async (credentials: SignUpCredentials, { rejectWithValue, dispatch }) => {
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: credentials.email,
-        password: credentials.password,
-        options: {
-          data: {
-            name: credentials.name,
-          },
-        },
-      });
-
-      if (error) throw error;
-      return data;
+      const result = await mockAuth.signUp(credentials.email, credentials.password, credentials.name);
+      
+      if (!result.success) {
+        return rejectWithValue(result.error || 'Sign up failed');
+      }
+      
+      // Load user-specific cart and orders after successful sign up (will be empty for new user)
+      if (result.session) {
+        dispatch(loadUserCart(result.session.user.id));
+        dispatch(loadUserOrders(result.session.user.id));
+      }
+      
+      return result.session;
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -51,10 +60,27 @@ export const signUp = createAsyncThunk(
 
 export const signOut = createAsyncThunk(
   'auth/signOut',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, dispatch, getState }) => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      // Save current cart before signing out
+      const state = getState() as any;
+      if (state.cart.userId && state.cart.items.length > 0) {
+        await dispatch(saveUserCart({ 
+          userId: state.cart.userId, 
+          items: state.cart.items 
+        }));
+      }
+      
+      // Clear cart and orders state
+      dispatch(clearUserCart());
+      dispatch(clearOrders());
+      
+      const result = await mockAuth.signOut();
+      
+      if (!result.success) {
+        return rejectWithValue(result.error || 'Sign out failed');
+      }
+      
       return null;
     } catch (error: any) {
       return rejectWithValue(error.message);
@@ -64,11 +90,21 @@ export const signOut = createAsyncThunk(
 
 export const getSession = createAsyncThunk(
   'auth/getSession',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, dispatch }) => {
     try {
-      const { data, error } = await supabase.auth.getSession();
-      if (error) throw error;
-      return data;
+      const result = await mockAuth.getSession();
+      
+      if (result.error) {
+        return rejectWithValue(result.error);
+      }
+      
+      // Load user-specific cart and orders if session exists
+      if (result.session) {
+        dispatch(loadUserCart(result.session.user.id));
+        dispatch(loadUserOrders(result.session.user.id));
+      }
+      
+      return result.session;
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -97,8 +133,10 @@ const authSlice = createSlice({
     });
     builder.addCase(signIn.fulfilled, (state, action) => {
       state.loading = false;
-      state.session = action.payload.session;
-      state.user = action.payload.user;
+      if (action.payload) {
+        state.session = action.payload;
+        state.user = action.payload.user;
+      }
     });
     builder.addCase(signIn.rejected, (state, action) => {
       state.loading = false;
@@ -112,8 +150,10 @@ const authSlice = createSlice({
     });
     builder.addCase(signUp.fulfilled, (state, action) => {
       state.loading = false;
-      state.session = action.payload.session;
-      state.user = action.payload.user;
+      if (action.payload) {
+        state.session = action.payload;
+        state.user = action.payload.user;
+      }
     });
     builder.addCase(signUp.rejected, (state, action) => {
       state.loading = false;
@@ -142,9 +182,9 @@ const authSlice = createSlice({
     });
     builder.addCase(getSession.fulfilled, (state, action) => {
       state.loading = false;
-      state.session = action.payload.session;
-      if (action.payload.session) {
-        state.user = action.payload.session.user;
+      if (action.payload) {
+        state.session = action.payload;
+        state.user = action.payload.user;
       }
     });
     builder.addCase(getSession.rejected, (state, action) => {

@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Product } from '../../types/product';
 
 export interface CartItem {
@@ -13,19 +14,70 @@ interface CartState {
   items: CartItem[];
   totalQuantity: number;
   totalAmount: number;
+  userId: string | null;
 }
 
 const initialState: CartState = {
   items: [],
   totalQuantity: 0,
   totalAmount: 0,
+  userId: null,
 };
+
+// Helper to save cart automatically
+const saveCartToStorage = async (userId: string, items: CartItem[]) => {
+  try {
+    await AsyncStorage.setItem(`fake-store-cart-${userId}`, JSON.stringify({ items }));
+  } catch (error) {
+    console.error('Failed to save cart:', error);
+  }
+};
+
+// Async thunk to load user-specific cart
+export const loadUserCart = createAsyncThunk(
+  'cart/loadUserCart',
+  async (userId: string) => {
+    try {
+      const cartData = await AsyncStorage.getItem(`fake-store-cart-${userId}`);
+      if (cartData) {
+        const parsedCart = JSON.parse(cartData);
+        return { items: parsedCart.items || [], userId };
+      }
+      return { items: [], userId };
+    } catch (error) {
+      return { items: [], userId };
+    }
+  }
+);
+
+// Async thunk to save user-specific cart
+export const saveUserCart = createAsyncThunk(
+  'cart/saveUserCart',
+  async ({ userId, items }: { userId: string; items: CartItem[] }) => {
+    try {
+      await AsyncStorage.setItem(`fake-store-cart-${userId}`, JSON.stringify({ items }));
+      return { success: true };
+    } catch (error) {
+      return { success: false };
+    }
+  }
+);
+
+// Async thunk to clear user cart on sign out
+export const clearUserCart = createAsyncThunk(
+  'cart/clearUserCart',
+  async () => {
+    return null;
+  }
+);
 
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
     addToCart: (state, action: PayloadAction<Product>) => {
+      if (!state.userId) return; // Don't allow cart operations without user
+
       const product = action.payload;
       const existingItemIndex = state.items.findIndex(item => item.id === product.id);
       
@@ -44,34 +96,48 @@ const cartSlice = createSlice({
       }
       
       // Update totals
-      state.totalQuantity += 1;
+      state.totalQuantity = calculateTotalQuantity(state.items);
       state.totalAmount = calculateTotalAmount(state.items);
+      
+      // Auto-save to storage
+      saveCartToStorage(state.userId, state.items);
     },
     
     removeFromCart: (state, action: PayloadAction<number>) => {
+      if (!state.userId) return;
+
       const productId = action.payload;
       const existingItemIndex = state.items.findIndex(item => item.id === productId);
       
       if (existingItemIndex !== -1) {
-        const item = state.items[existingItemIndex];
-        state.totalQuantity -= item.quantity;
         state.items.splice(existingItemIndex, 1);
+        state.totalQuantity = calculateTotalQuantity(state.items);
         state.totalAmount = calculateTotalAmount(state.items);
+        
+        // Auto-save to storage
+        saveCartToStorage(state.userId, state.items);
       }
     },
     
     increaseQuantity: (state, action: PayloadAction<number>) => {
+      if (!state.userId) return;
+
       const productId = action.payload;
       const existingItemIndex = state.items.findIndex(item => item.id === productId);
       
       if (existingItemIndex !== -1) {
         state.items[existingItemIndex].quantity += 1;
-        state.totalQuantity += 1;
+        state.totalQuantity = calculateTotalQuantity(state.items);
         state.totalAmount = calculateTotalAmount(state.items);
+        
+        // Auto-save to storage
+        saveCartToStorage(state.userId, state.items);
       }
     },
     
     decreaseQuantity: (state, action: PayloadAction<number>) => {
+      if (!state.userId) return;
+
       const productId = action.payload;
       const existingItemIndex = state.items.findIndex(item => item.id === productId);
       
@@ -85,8 +151,11 @@ const cartSlice = createSlice({
           state.items[existingItemIndex].quantity -= 1;
         }
         
-        state.totalQuantity -= 1;
+        state.totalQuantity = calculateTotalQuantity(state.items);
         state.totalAmount = calculateTotalAmount(state.items);
+        
+        // Auto-save to storage
+        saveCartToStorage(state.userId, state.items);
       }
     },
     
@@ -94,13 +163,37 @@ const cartSlice = createSlice({
       state.items = [];
       state.totalQuantity = 0;
       state.totalAmount = 0;
+      
+      // Auto-save to storage if user exists
+      if (state.userId) {
+        saveCartToStorage(state.userId, state.items);
+      }
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(loadUserCart.fulfilled, (state, action) => {
+        state.items = action.payload.items;
+        state.userId = action.payload.userId;
+        state.totalQuantity = calculateTotalQuantity(state.items);
+        state.totalAmount = calculateTotalAmount(state.items);
+      })
+      .addCase(clearUserCart.fulfilled, (state) => {
+        state.items = [];
+        state.totalQuantity = 0;
+        state.totalAmount = 0;
+        state.userId = null;
+      });
   },
 });
 
-// Helper function to calculate total amount
+// Helper functions
 const calculateTotalAmount = (items: CartItem[]): number => {
   return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+};
+
+const calculateTotalQuantity = (items: CartItem[]): number => {
+  return items.reduce((total, item) => total + item.quantity, 0);
 };
 
 export const { 

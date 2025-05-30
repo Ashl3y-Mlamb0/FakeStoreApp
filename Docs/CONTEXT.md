@@ -229,6 +229,93 @@ All API requests to the Fake Store Server must include the authenticated user's 
 ```http
 Authorization: Bearer <supabase_token>
 
+## 📊 Database Schema
+
+The Fake Store App uses Supabase for authentication and data storage with the following schema:
+
+### Authentication
+- Uses Supabase Auth with email/password authentication
+- JWT tokens for session management
+- Row Level Security (RLS) policies to ensure data privacy
+
+### Database Tables
+
+#### Profiles Table
+```sql
+CREATE TABLE public.profiles (
+  id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+  name TEXT,
+  email TEXT NOT NULL,
+  avatar_url TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+#### Orders Table
+```sql
+CREATE TABLE public.orders (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending',
+  total DECIMAL(10, 2) NOT NULL,
+  shipping_address JSONB NOT NULL,
+  payment_method TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+#### Order Items Table
+```sql
+CREATE TABLE public.order_items (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  order_id UUID REFERENCES public.orders(id) ON DELETE CASCADE NOT NULL,
+  product_id INTEGER NOT NULL,
+  product_title TEXT NOT NULL,
+  product_price DECIMAL(10, 2) NOT NULL,
+  quantity INTEGER NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+#### Favorites Table
+```sql
+CREATE TABLE public.favorites (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  product_id INTEGER NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE (user_id, product_id)
+);
+```
+
+### Row Level Security
+
+Each table has Row Level Security enabled with policies that ensure:
+- Users can only view/modify their own profiles
+- Users can only see their own orders and order items
+- Users can only manage their own favorites
+
+### Triggers
+
+A trigger automatically creates a profile entry when a new user registers:
+
+```sql
+CREATE OR REPLACE FUNCTION public.handle_new_user() 
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, email)
+  VALUES (NEW.id, NEW.email);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+```
+
 ## 🔧 Testing Checklist
 - [ ] Category screen loads categories
 - [ ] Product lists render correctly per category

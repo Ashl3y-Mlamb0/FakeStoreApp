@@ -131,6 +131,27 @@ export const updateUser = createAsyncThunk(
   }
 );
 
+export const deleteUser = createAsyncThunk(
+  'auth/deleteUser',
+  async (userId: string, { rejectWithValue, dispatch }) => {
+    try {
+      const result = await mockAuth.deleteUser(userId);
+      
+      if (!result.success) {
+        return rejectWithValue(result.error || 'Delete failed');
+      }
+      
+      // Clear cart and orders state after account deletion
+      dispatch(clearUserCart());
+      dispatch(clearOrders());
+      
+      return null;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -224,6 +245,21 @@ const authSlice = createSlice({
       }
     });
     builder.addCase(updateUser.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+
+    // Delete User
+    builder.addCase(deleteUser.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(deleteUser.fulfilled, (state) => {
+      state.loading = false;
+      state.user = null;
+      state.session = null;
+    });
+    builder.addCase(deleteUser.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });

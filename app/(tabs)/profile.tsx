@@ -4,7 +4,7 @@ import { Text, Button, Avatar, Card, Divider, useTheme, Portal, Modal, TextInput
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'expo-router';
 import { RootState } from '../../src/redux/store';
-import { signOut, getSession, updateUser } from '../../src/redux/slices/authSlice';
+import { signOut, getSession, updateUser, deleteUser } from '../../src/redux/slices/authSlice';
 import { AppDispatch } from '../../src/redux/store';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -46,6 +46,71 @@ export default function ProfileScreen() {
 
   const handleSignOut = () => {
     dispatch(signOut());
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account? This action cannot be undone and will permanently remove all your data including orders and cart items.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: confirmDeleteAccount,
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  const confirmDeleteAccount = () => {
+    Alert.alert(
+      'Final Confirmation',
+      'This will permanently delete your account. Type DELETE to confirm.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'I understand, delete my account',
+          style: 'destructive',
+          onPress: executeDeleteAccount,
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  const executeDeleteAccount = async () => {
+    if (!user) {
+      Alert.alert('Error', 'User not found');
+      return;
+    }
+
+    setUpdating(true);
+
+    try {
+      await dispatch(deleteUser(user.id)).unwrap();
+      Alert.alert(
+        'Account Deleted',
+        'Your account has been permanently deleted.',
+        [
+          {
+            text: 'OK',
+            onPress: () => router.replace('/auth/sign-in'),
+          },
+        ]
+      );
+    } catch (error: any) {
+      Alert.alert('Error', error || 'Failed to delete account. Please try again.');
+    } finally {
+      setUpdating(false);
+    }
   };
 
   const handleUpdateProfile = async () => {
@@ -211,6 +276,16 @@ export default function ProfileScreen() {
               icon="cart-outline"
             >
               Go to Checkout ({totalCartItems} items)
+            </Button>
+
+            <Button
+              mode="text"
+              onPress={handleDeleteAccount}
+              style={styles.signOutButton}
+              icon="delete"
+              textColor={colors.error}
+            >
+              Delete Account
             </Button>
 
             <Button

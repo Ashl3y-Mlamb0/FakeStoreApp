@@ -175,6 +175,41 @@ class MockAuthService {
       return { success: false, error: 'Failed to update user' };
     }
   }
+
+  async deleteUser(userId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const users = await this.getUsers();
+      const sessionData = await AsyncStorage.getItem(this.storageKey);
+      
+      if (!sessionData) {
+        return { success: false, error: 'Not authenticated' };
+      }
+
+      const session: AuthSession = JSON.parse(sessionData);
+      
+      if (session.user.id !== userId) {
+        return { success: false, error: 'Unauthorized' };
+      }
+
+      // Find and remove user by email
+      let userEmail = session.user.email;
+      
+      if (!users[userEmail]) {
+        return { success: false, error: 'User not found' };
+      }
+
+      // Delete user from users database
+      delete users[userEmail];
+      await this.saveUsers(users);
+
+      // Clear current session
+      await AsyncStorage.removeItem(this.storageKey);
+
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: 'Failed to delete user' };
+    }
+  }
 }
 
 export const mockAuth = new MockAuthService(); 

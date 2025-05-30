@@ -459,6 +459,128 @@ CREATE OR REPLACE TRIGGER on_auth_user_created
 
 **Peer Review**: +10 points
 
+# 🎨 UI/UX Improvement Brief for Fake Store App
+
+**Project Name:** Fake Store App  
+**Platform:** React Native (Expo, TypeScript, React Native Paper)
+
+---
+
+## 🧩 Background
+
+I’m developing a cross-platform mobile application called **Fake Store**, which allows users to:
+- Browse product categories and product listings
+- View detailed product information
+- Add items to a shopping cart
+- Create orders and track order status
+- Sign up, log in, and manage their profile
+
+The app currently uses **React Native Paper** for UI components and follows a functional flow, but the **visual design feels generic and lacks polish**.
+
+---
+
+## 🎯 Goal
+
+Redesign or refine the UI/UX to:
+- **Improve visual consistency and branding**
+- **Enhance user experience across navigation and interaction**
+- **Incorporate visual elements and layouts inspired by top retail apps**
+- Apply **material design principles** or other modern, scalable UI systems
+
+---
+
+## 🧭 Design Requirements
+
+### 1. Splash Screen
+- Professional look using minimal branding (see current purple + shopping cart concept)
+
+### 2. Authentication Screens
+- Modern form styling
+- Clear toggle between Sign In/Sign Up
+- Clean feedback animations or inline validation
+
+### 3. Category & Product List
+- Visual inspiration from apps like **Amazon**, **Shopee**, or **Etsy**
+- Product cards using image-forward designs with shadow/elevation
+- Filters or sorting UI (planned for future)
+
+### 4. Product Detail View
+- Bold image carousel
+- Pricing with emphasis
+- Clear CTA (Add to Cart)
+- Responsive layout for all screen sizes
+
+### 5. Shopping Cart
+- FlatList with thumbnail, title, quantity picker, remove option
+- Cart badge on tab bar
+- Sticky footer for total and Checkout button
+
+### 6. Order Screen
+- Expandable order cards
+- Status colors (e.g., “New,” “Paid,” “Delivered”)
+
+### 7. Tab Navigation
+- Bottom tab bar with icons and dynamic badges
+- Distinct active/inactive states
+
+### 8. Color Profile
+
+The Fake Store App uses **Purple** as its core brand color, chosen for its association with creativity, trust, and quality. The palette is designed for clarity, accessibility, and aesthetic harmony across light and dark themes.
+
+### 🔹 Primary Color
+- **Purple 600**: `#6A1B9A`  
+  Used for primary buttons, highlights, and active elements.
+
+### 🔸 Accent Colors
+- **Indigo 500**: `#3F51B5`  
+  Ideal for secondary buttons, links, and headers.
+- **Pink A200**: `#FF4081`  
+  Used for interactive elements like badges, likes, or highlights.
+- **Amber 400**: `#FFCA28`  
+  A contrasting call-to-action color (e.g., Checkout or Pay button).
+
+### ⚪️ Neutrals
+- **White**: `#FFFFFF`  
+  Main background for light theme.
+- **Light Gray**: `#F5F5F5`  
+  Card backgrounds, borders, and dividers.
+- **Dark Gray**: `#424242`  
+  Text and icon color on light backgrounds.
+
+### 🌙 Dark Theme Support
+- **Dark Surface**: `#121212`  
+  Base background for dark mode.
+- **Dark Card**: `#1E1E1E`  
+  Cards and modals in dark mode.
+- **Light Purple**: `#B388FF`  
+  Accent color on dark backgrounds.
+
+### ✅ Accessibility
+- Ensure minimum **contrast ratios** are met (4.5:1 for text).
+- Use the Material Design Color Tool to preview pairings: https://m3.material.io/theme-builder
+
+### 🎯 Usage Guidelines
+- Use **Purple 600** consistently for branding and main actions.
+- Reserve **Amber** or **Pink** for alerts or important CTAs.
+- Use neutral tones for backgrounds and spacing layers.
+
+
+---
+
+## 🔍 References
+
+- [Amazon Shopping](https://play.google.com/store/apps/details?id=com.amazon.mShop.android.shopping)
+- [Shopee](https://play.google.com/store/apps/details?id=com.shopee.sg)
+- [Etsy](https://play.google.com/store/apps/details?id=com.etsy.android)
+
+---
+
+## 📁 Deliverables
+
+- High-fidelity screen mockups (Figma preferred)
+- Component-level design system or style guide
+- Notes or annotations on intended interaction behavior (e.g., transitions, states)
+
 ## 📄 Resources
 - [Fake Store API](https://fakestoreapi.com/)
 - [Fake Store Server GitHub](https://github.com/LarryAtGU/fake-store-server)

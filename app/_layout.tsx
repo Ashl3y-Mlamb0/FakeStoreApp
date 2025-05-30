@@ -2,13 +2,13 @@ import React from 'react';
 import { Stack } from 'expo-router';
 import { PaperProvider } from 'react-native-paper';
 import { Provider as ReduxProvider } from 'react-redux';
-import { theme } from '../src/config/theme';
+import { lightTheme } from '../src/config/theme';
 import { store } from '../src/redux/store';
 
 export default function Layout() {
   return (
     <ReduxProvider store={store}>
-      <PaperProvider theme={theme}>
+      <PaperProvider theme={lightTheme}>
         <Stack
           screenOptions={{
             headerShown: false,

@@ -66,12 +66,14 @@ export default function ProductDetailScreen() {
       </Appbar.Header>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Card style={[styles.imageCard, { backgroundColor: theme.colors.surface }]}>
-          <View style={styles.imageContainer}>
-            <Image
-              source={{ uri: product.image }}
-              style={styles.image}
-              resizeMode="contain"
-            />
+          <View style={styles.imageWrapper}>
+            <View style={styles.imageContainer}>
+              <Image
+                source={{ uri: product.image }}
+                style={styles.image}
+                resizeMode="contain"
+              />
+            </View>
           </View>
         </Card>
         
@@ -146,11 +148,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 12,
     elevation: 2,
-    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+  },
+  imageWrapper: {
+    overflow: 'hidden',
+    borderRadius: 12,
   },
   imageContainer: {
     width: '100%',

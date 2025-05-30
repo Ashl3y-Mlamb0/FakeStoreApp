@@ -131,6 +131,7 @@ export default function OrdersScreen() {
                       style={styles.actionButton}
                       icon="credit-card"
                       loading={loading}
+                      buttonColor={colors.statusPaid}
                     >
                       Pay Order
                     </Button>
@@ -143,6 +144,7 @@ export default function OrdersScreen() {
                       style={styles.actionButton}
                       icon="package-variant"
                       loading={loading}
+                      buttonColor={colors.statusDelivered}
                     >
                       Mark as Received
                     </Button>
@@ -150,8 +152,8 @@ export default function OrdersScreen() {
 
                   {order.status === 'delivered' && (
                     <View style={styles.deliveredBadge}>
-                      <MaterialCommunityIcons name="check-circle" size={20} color={colors.primary} />
-                      <Text style={{ color: colors.primary, marginLeft: 8 }}>
+                      <MaterialCommunityIcons name="check-circle" size={20} color={colors.statusDelivered} />
+                      <Text style={{ color: colors.statusDelivered, marginLeft: 8 }}>
                         Order Completed
                       </Text>
                     </View>
@@ -185,9 +187,9 @@ export default function OrdersScreen() {
       </Appbar.Header>
       
       <ScrollView style={styles.scrollContainer}>
-        {renderOrderSection('New Orders', getOrdersByStatus('new'), colors.error)}
-        {renderOrderSection('Paid Orders', getOrdersByStatus('paid'), colors.tertiary)}
-        {renderOrderSection('Delivered Orders', getOrdersByStatus('delivered'), colors.primary)}
+        {renderOrderSection('New Orders', getOrdersByStatus('new'), colors.statusNew)}
+        {renderOrderSection('Paid Orders', getOrdersByStatus('paid'), colors.statusPaid)}
+        {renderOrderSection('Delivered Orders', getOrdersByStatus('delivered'), colors.statusDelivered)}
       </ScrollView>
     </SafeAreaView>
   );

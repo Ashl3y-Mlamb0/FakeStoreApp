@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../src/redux/store';
 
 export default function TabsLayout() {
-  const theme = useTheme();
+  const { colors } = useTheme();
   const { totalQuantity } = useCart();
   const { orders } = useSelector((state: RootState) => state.orders);
   
@@ -18,11 +18,27 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.outline,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.onSurfaceVariant,
         tabBarStyle: {
-          backgroundColor: theme.colors.surface,
-          borderTopColor: theme.colors.surfaceVariant,
+          backgroundColor: colors.surface,
+          borderTopColor: colors.outlineVariant,
+          borderTopWidth: 1,
+          elevation: 8,
+          shadowColor: colors.shadow,
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          paddingBottom: 4,
+          paddingTop: 4,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '600',
+          marginTop: 2,
+        },
+        tabBarIconStyle: {
+          marginTop: 2,
         },
       }}
     >
@@ -31,8 +47,12 @@ export default function TabsLayout() {
         options={{
           title: 'Products',
           tabBarLabel: 'Products',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="grid-outline" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons 
+              name={focused ? "grid" : "grid-outline"} 
+              size={size} 
+              color={color} 
+            />
           ),
         }}
       />
@@ -41,11 +61,25 @@ export default function TabsLayout() {
         options={{
           title: 'Cart',
           tabBarLabel: 'Cart',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="cart-outline" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons 
+              name={focused ? "cart" : "cart-outline"} 
+              size={size} 
+              color={color} 
+            />
           ),
           tabBarBadge: totalQuantity > 0 ? totalQuantity : undefined,
-          tabBarBadgeStyle: { backgroundColor: theme.colors.primary },
+          tabBarBadgeStyle: { 
+            backgroundColor: colors.primary,
+            color: colors.onPrimary,
+            fontSize: 12,
+            fontWeight: 'bold',
+            minWidth: 20,
+            height: 20,
+            borderRadius: 10,
+            marginLeft: 12,
+            marginTop: -8,
+          },
         }}
       />
       <Tabs.Screen
@@ -53,11 +87,25 @@ export default function TabsLayout() {
         options={{
           title: 'My Orders',
           tabBarLabel: 'Orders',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="receipt" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons 
+              name={focused ? "receipt" : "receipt-outline"} 
+              size={size} 
+              color={color} 
+            />
           ),
           tabBarBadge: newOrdersCount > 0 ? newOrdersCount : undefined,
-          tabBarBadgeStyle: { backgroundColor: theme.colors.error },
+          tabBarBadgeStyle: { 
+            backgroundColor: colors.tertiary,
+            color: colors.onTertiary,
+            fontSize: 12,
+            fontWeight: 'bold',
+            minWidth: 20,
+            height: 20,
+            borderRadius: 10,
+            marginLeft: 12,
+            marginTop: -8,
+          },
         }}
       />
       <Tabs.Screen
@@ -65,8 +113,12 @@ export default function TabsLayout() {
         options={{
           title: 'Profile',
           tabBarLabel: 'Profile',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons 
+              name={focused ? "person" : "person-outline"} 
+              size={size} 
+              color={color} 
+            />
           ),
         }}
       />

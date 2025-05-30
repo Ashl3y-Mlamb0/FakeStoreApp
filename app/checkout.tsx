@@ -207,7 +207,13 @@ export default function CheckoutScreen() {
       <Headline style={styles.stepTitle}>Payment Method</Headline>
       
       <RadioButton.Group onValueChange={value => setPaymentMethod(value)} value={paymentMethod}>
-        <Card style={styles.paymentCard}>
+        <Card 
+          style={[
+            styles.paymentCard, 
+            paymentMethod === 'credit' && { borderColor: colors.primary, borderWidth: 2 }
+          ]}
+          onPress={() => setPaymentMethod('credit')}
+        >
           <Card.Content style={styles.paymentCardContent}>
             <View style={styles.paymentMethod}>
               <View style={styles.paymentInfo}>
@@ -219,7 +225,13 @@ export default function CheckoutScreen() {
           </Card.Content>
         </Card>
         
-        <Card style={styles.paymentCard}>
+        <Card 
+          style={[
+            styles.paymentCard, 
+            paymentMethod === 'paypal' && { borderColor: colors.primary, borderWidth: 2 }
+          ]}
+          onPress={() => setPaymentMethod('paypal')}
+        >
           <Card.Content style={styles.paymentCardContent}>
             <View style={styles.paymentMethod}>
               <View style={styles.paymentInfo}>
@@ -231,7 +243,13 @@ export default function CheckoutScreen() {
           </Card.Content>
         </Card>
         
-        <Card style={styles.paymentCard}>
+        <Card 
+          style={[
+            styles.paymentCard, 
+            paymentMethod === 'cod' && { borderColor: colors.primary, borderWidth: 2 }
+          ]}
+          onPress={() => setPaymentMethod('cod')}
+        >
           <Card.Content style={styles.paymentCardContent}>
             <View style={styles.paymentMethod}>
               <View style={styles.paymentInfo}>

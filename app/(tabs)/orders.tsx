@@ -7,6 +7,7 @@ import { updateOrderStatus } from '../../src/redux/slices/ordersSlice';
 import { AppDispatch } from '../../src/redux/store';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Order } from '../../src/redux/slices/ordersSlice';
+import { lightTheme } from '../../src/config/theme';
 
 export default function OrdersScreen() {
   const { colors } = useTheme();
@@ -104,7 +105,7 @@ export default function OrdersScreen() {
             </TouchableOpacity>
 
             {expandedOrders.has(order.id) && (
-              <>
+              <View>
                 <Divider />
                 <Card.Content style={styles.orderDetails}>
                   <Text variant="titleSmall" style={styles.itemsTitle}>Order Items:</Text>
@@ -131,7 +132,7 @@ export default function OrdersScreen() {
                       style={styles.actionButton}
                       icon="credit-card"
                       loading={loading}
-                      buttonColor={colors.statusPaid}
+                      buttonColor={lightTheme.colors.statusPaid as any}
                     >
                       Pay Order
                     </Button>
@@ -144,7 +145,7 @@ export default function OrdersScreen() {
                       style={styles.actionButton}
                       icon="package-variant"
                       loading={loading}
-                      buttonColor={colors.statusDelivered}
+                      buttonColor={lightTheme.colors.statusDelivered as any}
                     >
                       Mark as Received
                     </Button>
@@ -152,14 +153,14 @@ export default function OrdersScreen() {
 
                   {order.status === 'delivered' && (
                     <View style={styles.deliveredBadge}>
-                      <MaterialCommunityIcons name="check-circle" size={20} color={colors.statusDelivered} />
-                      <Text style={{ color: colors.statusDelivered, marginLeft: 8 }}>
+                      <MaterialCommunityIcons name="check-circle" size={20} color={lightTheme.colors.statusDelivered as any} />
+                      <Text style={{ color: lightTheme.colors.statusDelivered as any, marginLeft: 8 }}>
                         Order Completed
                       </Text>
                     </View>
                   )}
                 </Card.Content>
-              </>
+              </View>
             )}
           </Card>
         ))
@@ -187,9 +188,9 @@ export default function OrdersScreen() {
       </Appbar.Header>
       
       <ScrollView style={styles.scrollContainer}>
-        {renderOrderSection('New Orders', getOrdersByStatus('new'), colors.statusNew)}
-        {renderOrderSection('Paid Orders', getOrdersByStatus('paid'), colors.statusPaid)}
-        {renderOrderSection('Delivered Orders', getOrdersByStatus('delivered'), colors.statusDelivered)}
+        {renderOrderSection('New Orders', getOrdersByStatus('new'), lightTheme.colors.statusNew as any)}
+        {renderOrderSection('Paid Orders', getOrdersByStatus('paid'), lightTheme.colors.statusPaid as any)}
+        {renderOrderSection('Delivered Orders', getOrdersByStatus('delivered'), lightTheme.colors.statusDelivered as any)}
       </ScrollView>
     </SafeAreaView>
   );

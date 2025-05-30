@@ -4,10 +4,9 @@ import { Text, Button, Avatar, Card, Divider, useTheme, Portal, Modal, TextInput
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'expo-router';
 import { RootState } from '../../src/redux/store';
-import { signOut, getSession } from '../../src/redux/slices/authSlice';
+import { signOut, getSession, updateUser } from '../../src/redux/slices/authSlice';
 import { AppDispatch } from '../../src/redux/store';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { mockAuth } from '../../src/services/auth/mockAuth';
 
 export default function ProfileScreen() {
   const { colors } = useTheme();
@@ -65,18 +64,25 @@ export default function ProfileScreen() {
       return;
     }
 
+    if (!user) {
+      Alert.alert('Error', 'User not found');
+      return;
+    }
+
     setUpdating(true);
 
     try {
-      // Since we're using mock auth, we'll simulate updating the user profile
-      // In a real app, this would be an API call
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
+      await dispatch(updateUser({
+        userId: user.id,
+        name: updateForm.name.trim(),
+        password: updateForm.password || undefined,
+      })).unwrap();
       
       Alert.alert('Success', 'Profile updated successfully!');
       setUpdateModalVisible(false);
       setUpdateForm(prev => ({ ...prev, password: '', confirmPassword: '' }));
-    } catch (error) {
-      Alert.alert('Error', 'Failed to update profile. Please try again.');
+    } catch (error: any) {
+      Alert.alert('Error', error || 'Failed to update profile. Please try again.');
     } finally {
       setUpdating(false);
     }

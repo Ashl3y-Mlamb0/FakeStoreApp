@@ -111,6 +111,26 @@ export const getSession = createAsyncThunk(
   }
 );
 
+export const updateUser = createAsyncThunk(
+  'auth/updateUser',
+  async (updateData: { userId: string; name?: string; password?: string }, { rejectWithValue }) => {
+    try {
+      const result = await mockAuth.updateUser(updateData.userId, {
+        name: updateData.name,
+        password: updateData.password,
+      });
+      
+      if (!result.success) {
+        return rejectWithValue(result.error || 'Update failed');
+      }
+      
+      return result.user;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -188,6 +208,22 @@ const authSlice = createSlice({
       }
     });
     builder.addCase(getSession.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+
+    // Update User
+    builder.addCase(updateUser.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(updateUser.fulfilled, (state, action) => {
+      state.loading = false;
+      if (action.payload) {
+        state.user = action.payload;
+      }
+    });
+    builder.addCase(updateUser.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });

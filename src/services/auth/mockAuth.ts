@@ -125,6 +125,56 @@ class MockAuthService {
       return { session: null, error: 'Failed to get session' };
     }
   }
+
+  async updateUser(userId: string, updateData: { name?: string; password?: string }): Promise<{ success: boolean; error?: string; user?: User }> {
+    try {
+      const users = await this.getUsers();
+      const sessionData = await AsyncStorage.getItem(this.storageKey);
+      
+      if (!sessionData) {
+        return { success: false, error: 'Not authenticated' };
+      }
+
+      const session: AuthSession = JSON.parse(sessionData);
+      
+      if (session.user.id !== userId) {
+        return { success: false, error: 'Unauthorized' };
+      }
+
+      // Find user by email to update
+      let userEmail = session.user.email;
+      let userData = users[userEmail];
+      
+      if (!userData) {
+        return { success: false, error: 'User not found' };
+      }
+
+      // Update user data
+      if (updateData.name !== undefined) {
+        userData.user.name = updateData.name;
+      }
+      
+      if (updateData.password !== undefined) {
+        userData.password = updateData.password;
+      }
+
+      // Save updated users
+      users[userEmail] = userData;
+      await this.saveUsers(users);
+
+      // Update session with new user data
+      const updatedSession: AuthSession = {
+        ...session,
+        user: userData.user,
+      };
+      
+      await AsyncStorage.setItem(this.storageKey, JSON.stringify(updatedSession));
+
+      return { success: true, user: userData.user };
+    } catch (error) {
+      return { success: false, error: 'Failed to update user' };
+    }
+  }
 }
 
 export const mockAuth = new MockAuthService(); 
